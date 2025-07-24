@@ -1,0 +1,41 @@
+INSTALAÇÃO DO GRAFANA 10.3.3
+
+Ubuntu and Debian(64 Bit)
+
+sudo apt-get install -y adduser libfontconfig1 musl
+wget https://dl.grafana.com/enterprise/release/grafana-enterprise_10.3.3_amd64.deb
+sudo dpkg -i grafana-enterprise_10.3.3_amd64.deb
+
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable grafana-server
+sudo /bin/systemctl start grafana-server
+ 
+grafana-cli plugins list-remote | grep zabbix
+grafana-cli plugins install alexanderzobnin-zabbix-app
+service grafana-server restart
+
+Entre no Grafana na URL 
+http://IP-SERVIDOR:3000 
+O usuário é "admin" e a senha padrão é "admin".
+
+CONFIGURAÇÃO DO PLUGIN ZABBIX
+
+URL: http://IP-Servidor/zabbix/api_jsonrpc.php
+Access : Server (default)
+Vá em "Zabbix API details":
+Username: Admin
+Password: zabbix
+
+1. Configuração do LDAP no Grafana
+
+-Adicionar as configuração no arquivo 
+
+(nano /etc/grafana/ldap.toml)
+
+-Ativação do LDAP no arquivo 
+
+( nano /etc/grafana/grafana.ini)
+
+-Comando para dar um restart na maquina e adicionar a configuração
+
+( systemctl restart grafana-server)
