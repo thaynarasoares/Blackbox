@@ -1,0 +1,39 @@
+ADICIONAR wazuh-archives-*
+
+ 
+###########################################
+
+<ossec_config>
+  <global>
+    <jsonout_output>yes</jsonout_output>
+    <alerts_log>yes</alerts_log>
+    <logall>yes</logall>
+    <logall_json>yes</logall_json> ADICIONAR YES NO LUGAR DO NO
+
+   ...
+</ossec_config>
+
+
+systemctl restart wazuh-manager
+
+
+#######################################
+
+
+nano /etc/filebeat/filebeat.yml
+
+
+
+archives:
+ enabled: true COLOCAR TRUE NO LUGAR DO NO
+
+
+####################################
+
+ARRUMAR NO PAINEL
+
+ Dashboard management > Index patterns > Create index pattern. Use wazuh-archives-* as the index pattern name, and set timestamp in the Time field drop-down list.
+
+
+
+###########
