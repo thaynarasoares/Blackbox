@@ -1,0 +1,14 @@
+CONFIGRAÇÃO PARA DEBUG WAZUH
+
+
+1- ARQUIVO DE CONFIGURAÇÃO:
+
+nano /var/ossec/etc/internal_options.conf
+
+
+2- OPÇÃO DE DEBUG
+LINK: https://documentation.wazuh.com/current/user-manual/reference/internal-options.html#windows
+
+
+
+

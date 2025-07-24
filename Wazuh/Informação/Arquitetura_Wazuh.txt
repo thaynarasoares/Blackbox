@@ -1,0 +1,58 @@
+ARQUITETURA WAZUH
+
+Referência
+LINK: https://documentation.wazuh.com/current/getting-started/architecture.html
+
+
+PORTAS UTILIZADAS
+
+
+Servidor Wazuh
+
+1514
+TCP (padrão)
+Serviço de conexão de agente
+
+1514
+UDP (opcional)
+Serviço de conexão de agente (desabilitado por padrão)
+
+1515
+TCP
+Serviço de inscrição de agentes
+
+1516
+TCP
+Daemon de cluster Wazuh
+
+514
+UDP (padrão)
+Coletor Wazuh Syslog (desabilitado por padrão)
+
+514
+TCP (opcional)
+Coletor Wazuh Syslog (desabilitado por padrão)
+
+55000
+TCP
+API RESTful do servidor Wazuh
+
+--------------------------
+
+Indexador Wazuh
+
+9200
+TCP
+API RESTful do indexador Wazuh
+
+9300-9400
+TCP
+Comunicação do cluster do indexador Wazuh
+
+--------------------------
+
+Painel Wazuh
+
+443
+TCP
+Interface de usuário da web Wazuh

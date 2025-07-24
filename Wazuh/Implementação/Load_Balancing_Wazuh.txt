@@ -1,0 +1,94 @@
+LOAD BALANCER WAZUH AMBIENTE CLUSTER
+
+Referência:
+LINK: https://wazuh.com/blog/nginx-load-balancer-in-a-wazuh-cluster/
+
+
+INSTALAÇÃO DO NGINX
+
+
+yum update -y 
+amazon-linux-extras list | grep nginx 
+amazon-linux-extras enable nginx1 
+yum clean metadata 
+yum -y install nginx 
+systemctl enable nginx
+systemctl start nginx
+
+
+2. Execute o comando abaixo para confirmar que a versão do NGINX instalada suporta stream como um módulo dinâmico with-stream=dynamic. Este módulo é essencial para lidar com tráfego TCP/UDP no NGINX:
+
+
+nginx -V 2>&1 | grep dynamic
+
+
+3. Crie o arquivo de configuração do balanceador de carga wazuh_load_balancer.conf no /etc/nginx/conf.d/diretório:
+
+
+touch /etc/nginx/conf.d/wazuh_load_balancer.conf
+
+
+4. Adicione o seguinte algoritmo de hash com consistentconfiguração de parâmetros ao /etc/nginx/conf.d/wazuh_load_balancer.confarquivo NGINX:
+
+
+stream {
+   upstream master {
+       server IP DO MASTER;
+   }
+   upstream mycluster {
+   hash $remote_addr consistent;
+       server IP DO WORKER;
+       server IP DO WORKER;
+
+   }
+   server {
+       listen 1515;
+       proxy_pass master;
+   }
+   server {
+       listen 1514;
+       proxy_pass mycluster;
+   }
+}
+
+
+5. Teste a configuração para verificar a sintaxe correta:
+
+
+nginx -t
+
+
+Se a saída do teste for como visto abaixo, siga o passo 6 para corrigir o erro. Se não for, continue para o passo 7.
+
+Saída:
+
+nginx: [emerg] "stream" directive is not allowed here in /etc/nginx/conf.d/wazuh_load_balancer.conf:1
+
+
+6. Instale o seguinte módulo nginx-mod-stream.x86_64. Ele é necessário para lidar com o tráfego de fluxo:
+
+
+
+yum instalar nginx-mod-stream.x86_64 -y
+
+
+7. Modifique o /etc/nginx/nginx.confarquivo e mova a include /etc/nginx/conf.d/*.conflinha de código ; de dentro da http{ }diretiva para cima dela, conforme visto abaixo:
+
+
+8. Teste a configuração novamente:
+
+
+nginx -t
+
+
+
+Saída:
+
+nginx: a sintaxe do arquivo de configuração /etc/nginx/nginx.conf está ok
+nginx: o teste do arquivo de configuração /etc/nginx/nginx.conf foi bem-sucedido
+
+
+9. Reinicie o serviço NGINX para implementar as alterações:
+
+systemctl restart nginx
+

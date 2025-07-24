@@ -1,0 +1,44 @@
+COMANDO DE CLUSTER
+
+LINK: https://documentation.wazuh.com/current/user-manual/reference/tools/cluster-control.html
+
+
+- VERIFICAR A CONEXÃO COM OS SERVIDOR -- > INDEX
+
+
+filebeat test output
+
+
+ - VERIFICAR A CONEXÃO COM OS MASTER/WORKER
+
+
+ /var/ossec/bin/cluster_control -l
+
+
+- Obtenha a verificação de integridade do cluster ( RESUMIDA)
+
+
+/var/ossec/bin/cluster_control -i
+
+
+- VERSÃO ESTENDIDA
+
+/var/ossec/bin/cluster_control -i more
+
+
+
+-  Obtenha agentes em cluster
+
+
+/var/ossec/bin/cluster_control -a
+
+
+/var/ossec/bin/manage_agents
+
+
+
+Todos os logs de cluster são gravados no /var/ossec/logs/cluster.log arquivo de uma instalação padrão do Wazuh.
+
+
+
+

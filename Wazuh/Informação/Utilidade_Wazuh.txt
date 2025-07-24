@@ -1,0 +1,113 @@
+UTILIDADE DO WAZUH  
+
+1- Atualizar o agents por API
+
+
+PUT /agents/upgrade?agents_list=all&pretty=true&wait_for_complete=true
+
+ou 
+
+PUT /agents/upgrade?agents_list=012,014&wait_for_complete=true&pretty=true
+
+
+
+2- Vê os Logs
+
+
+cat /var/ossec/logs/ossec.log
+
+
+3-Testar LOG para verificar Regra e Decoder
+
+
+/var/ossec/bin/wazuh-logtest
+
+
+
+4- Tirar o agent ou listar 
+
+
+/var/ossec/bin/manage_agents
+
+
+
+5- Informação
+
+
+wazuh‑alerts-* : Este é o padrão de índice para alertas gerados pelo servidor Wazuh.
+
+wazuh‑archives-* : Este é o padrão de índice para todos os eventos enviados ao servidor Wazuh.
+
+wazuh‑monitoring-* : Este é o padrão de índice para o status dos agentes Wazuh.
+
+wazuh‑statistics-* : Este é o padrão de índice para informações estatísticas do servidor Wazuh.
+
+
+
+6- Verificar o Vida Util do Indice
+
+
+https://documentation.wazuh.com/current/user-manual/wazuh-indexer/index-life-management.html
+
+
+
+VERIFICADOR DE LOG
+
+-cat /var/log/wazuh-indexer/wazuh-cluster.log | grep -i -E "error|warn"
+-cat /var/log/elasticsearch/elasticsearch.log | grep -i -E "error|warn"
+- cat /var/ossec/logs/api.log 
+
+
+SOBRE O WAZUH E SUA FORMA DE ARMAZENAMENTO
+
+-https://groups.google.com/g/wazuh/c/O-tCRie4qzE/m/crJ2s8qHAgAJ
+
+
+VERIFICAR SE O WAZUH ESTÁ AGUENTANDO
+
+
+- /var/ossec/var/run/wazuh-analysisd.state : a variável ' events_dropped ' indica se os eventos estão sendo descartados devido a limitações de recursos.
+
+- /var/ossec/var/run/wazuh-remoted.state : a variável ' discarded_count ' indica se as mensagens dos agentes foram descartadas.
+
+
+https://groups.google.com/g/wazuh/c/NQNL9u4WNlc/m/OR9HA6m4AAAJ (BLOQUEAR ALERTA DE IP ESPECIFICO)
+https://groups.google.com/g/wazuh/c/kUT2Yn32exA (SOBRE JVM)
+
+
+VERIFICAR OS INDICES
+
+curl -u admin:SENHA -k https://IP:9200/_cat/indices
+
+
+VERIFICAR O CLUSTER
+
+curl -u admin:SENHA -k https://IP:9200/_cluster/health?pretty
+
+
+
+VERIFICAR SE WAZUH-DB ESTÁ EM EXECUÇÃO
+
+
+/var/ossec/bin/wazuh-control status
+
+
+VERIFICAR SE AS PERMISSÕES DO ARQUIVO DO BANCO DE DADOS
+
+
+ls -l /var/ossec/queue/db/
+
+
+
+VERIFICAR EM RELAÇÃO AO INDEXADOR ( Indexer Management -> Dev Tools. )
+
+
+GET /_cat/shards
+
+GET _cat/indices/?v
+
+
+
+
+
+

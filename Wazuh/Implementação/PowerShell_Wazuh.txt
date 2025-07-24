@@ -1,0 +1,21 @@
+IMPLEMENTAÇÃO POWERSHELL / TERMINAL SERVICE / REMOTE CONNECTION (LINK: https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/configuration.html)
+
+-Adicionar nas configuração do Grupo
+
+ENDPOINT GROUPS
+
+
+	<localfile>
+		<location>Microsoft-Windows-PowerShell/Operational</location>
+		<log_format>eventchannel</log_format>
+	</localfile>
+	<localfile>
+		<location>Microsoft-Windows-TerminalServices-RemoteConnectionManager</location>
+		<log_format>eventchannel</log_format>
+	</localfile>
+
+
+
+-systemctl restart wazuh-agent
+
+

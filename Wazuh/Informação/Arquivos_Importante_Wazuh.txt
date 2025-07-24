@@ -1,0 +1,36 @@
+ARQUIVOS IMPORTANTE DO WAZUH
+
+
+- DASHBOARD
+
+
+nano /usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml (CONFIGURAÇÃO DO HOST DE ACESSO WEB)
+
+nano /etc/wazuh-dashboard/opensearch_dashboards.yml (CONFIGURAÇÃO DOS ACESSOS)
+
+
+- INDEX
+
+nano /etc/wazuh-indexer/opensearch-security/roles_mapping.yml (CONFIGURAÇÃO DO MAPEAMENTO DE ROLES)
+
+nano /etc/wazuh-indexer/opensearch-security/config.yml (CONFIGURAÇÃO DO LDAP)
+
+nano /etc/wazuh-indexer/opensearch.yml (CONFIGURAÇÃO DOS IP DOS INDEX E ETC)
+
+
+- MANAGER
+
+nano /var/ossec/etc/ossec.conf (CONFIGURAÇÃO GERAL)
+
+nano  /etc/filebeat/filebeat.yml (CONFIGURAÇÃO DO FILEBEAT)
+
+
+- PRIMEIRO ARQUIVO DE CONFIGURAÇÃO
+
+
+locate config.yml
+
+nano /home/admin-wazuh/config.yml (FICA NOS INDEX)
+
+
+

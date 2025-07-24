@@ -1,0 +1,53 @@
+MUDANÇA DE DIRETÓRIO NO Wazuh indexer | Ambiente em Cluster
+
+Referência
+LINK: https://groups.google.com/g/wazuh/c/9o88TO-EctU | https://groups.google.com/g/wazuh/c/enQjlxGb07Q/m/7MAxyVRJAQAJ
+
+1- LOCAL ORIGINAL
+
+path.data: /var/lib/wazuh-indexer
+path.logs: /var/log/wazuh-indexer
+
+
+2- Passo a Passo
+
+systemctl stop filebeat
+
+
+systemctl stop wazuh-indexer
+
+
+nano /usr/lib/systemd/system/wazuh-indexer.service
+
+3- Criar o caminho novo 
+
+mkdir -p /opt/var/lib/wazuh-indexer
+
+
+mv /var/lib/wazuh-indexer/* /opt/var/lib/wazuh-indexer/
+
+
+mkdir -p /opt/var/log/wazuh-indexer
+
+
+mv /var/log/wazuh-indexer/* /opt/var/log/wazuh-indexer/
+
+
+nano /etc/wazuh-indexer/opensearch.yml
+
+
+4- Adicionar as permissões 
+
+chown -R wazuh-indexer:wazuh-indexer /opt/var/lib/wazuh-indexer
+
+chown -R wazuh-indexer:wazuh-indexer /opt/var/log/wazuh-indexer
+
+chown root:syslog /opt/var/log
+
+chown wazuh-indexer:wazuh-indexer /opt/var/lib
+
+5- Reiniciar o Wazuh Indexer
+
+systemctl enable wazuh-indexer
+systemctl daemon-reload
+systemctl start wazuh-indexer

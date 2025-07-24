@@ -1,0 +1,129 @@
+CONFIGURAÇÃO DO RSYSLOG COM O ESXi E WAZUH 
+
+Referência:
+https://wazuh.com/blog/monitoring-vmware-esxi-with-wazuh/
+
+
+1. Instale e configure o rsyslog
+
+
+apt install rsyslog -y
+
+
+2. Edite o arquivo /etc/rsyslog.conf:
+
+
+&nbsp;nano /etc/rsyslog.conf
+
+
+3. Adicione essas linhas:
+
+3.1 Adicione isso no final do arquivo para salvar logs do ESXi num arquivo especifico:
+
+
+
+$ModLoad imudp
+
+$UDPServerRun 514
+
+
+
+if $fromhost-ip startswith 'IP-SXI' then /opt/log/vmware-esxi.log
+
+\& ~
+
+
+
+ALTEREI TAMBÉM
+
+
+$FileOwner syslog
+
+$FileGroup syslog
+
+
+
+4. Crie o arquivo de log e defina permissões:
+
+
+touch /opt/log/vmware-esxi.log
+
+chown syslog:syslog /opt/log/vmware-esxi.log
+
+
+4.1 Com a mudança do /var para /opt vou preciso fazer a parte 4.1
+
+4.2 Bloqueio no AppArmor
+
+
+nano /etc/apparmor.d/usr.sbin.rsyslogd
+
+
+
+4.3 Adicione as regras de permissão
+
+
+
+# Permite ao rsyslog escrever em /opt/log
+
+/opt/log/ rw,
+
+/opt/log/\*\* rw,
+
+
+4.4 Recarregue o AppArmor
+
+
+systemctl reload apparmor
+
+
+4.5 Reinicie o serviço Rsyslog
+
+
+systemctl restart rsyslog
+
+
+
+5. Reinicie o serviço:
+
+
+systemctl restart rsyslog
+
+
+
+6. Configure o Wazuh Agent no Ubuntu
+
+
+
+nano /var/ossec/etc/ossec.conf
+
+
+
+<localfile>
+
+&nbsp; <log\_format>syslog</log\_format>
+
+&nbsp; <location>/opt/log/vmware-esxi.log</location>
+
+&nbsp; <out\_format>vmware-esxi: $(log)</out\_format>
+
+</localfile>
+
+
+
+7. Reinicie o agente:
+
+
+
+systemctl restart wazuh-agent
+
+
+
+No ESXi: Configure o envio de logs para o Ubuntu - UDP - 514
+
+
+
+
+
+
+

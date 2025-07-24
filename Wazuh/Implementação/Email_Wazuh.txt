@@ -1,0 +1,48 @@
+CONFIGURAÇÃO DE EMAIL WAZUH
+
+
+1- CONFIG OSSEC
+
+
+    <email_notification>yes</email_notification>
+    <smtp_server>SERVER-SMTP</smtp_server>
+    <email_from>EMAIL</email_from>
+    <email_maxperhour>12</email_maxperhour>
+
+
+  <alerts>
+    <log_alert_level>3</log_alert_level>
+    <email_alert_level>3</email_alert_level>
+  </alerts>
+
+
+A  do_not_delay opção permite enviar o e-mail desses alertas imediatamente, sem agrupá-los ou esperar por outros e-mails. <do_not_delay/>
+
+
+2- RECEBER EMAIL QUANDO ACIONA A REGRA
+
+entra no cd /var/ossec/ruleset/rules/
+Vai no arquivo aonde tem a regra que você quer alertar e coloque o comando <options>alert_by_email</options>, sempre que gerar um alerta desta regra, você vai receber um e-mail
+Obs: se atualizar o wazuh perde esta personalização 
+
+
+alert_by_email - para sempre alertar por e-mail.
+
+no_email_alert - para nunca alertar por e-mail.
+
+no_log - para não registrar este alerta.
+
+EXEMPLO:
+<options>alert_by_email</options>
+
+
+
+4- LINK DE DOCUMENTAÇÃO
+
+LINK: https://documentation.wazuh.com/current/user-manual/manager/alert-management.html
+LINK: https://documentation.wazuh.com/current/user-manual/manager/alert-management.html#smtp-server-with-authentication
+LINK: https://www.youtube.com/watch?v=Hz4ZcyY6PsQ
+
+
+
+

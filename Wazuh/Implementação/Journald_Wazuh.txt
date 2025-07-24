@@ -1,0 +1,80 @@
+IMPLEMENTANDO LOGS DO JOURNALD | LINUX
+
+
+Referência:
+LINK: https://documentation.wazuh.com/4.9/user-manual/capabilities/log-data-collection/journald.html
+
+
+
+1- PARA DADOS DE SSH E CRON
+
+1.1- ADICIONEI NOS ENDPOINTS GROUPS
+
+
+<!-- For monitoring journald service -->
+<localfile>
+  <location>journald</location>
+  <log_format>journald</log_format>
+  <filter field="_SYSTEMD_UNIT">^ssh.service$</filter>
+</localfile>
+
+<localfile>
+  <location>journald</location>
+  <log_format>journald</log_format>
+  <filter field="_SYSTEMD_UNIT">^cron.service$</filter>
+  <filter field="PRIORITY">[0-6]</filter>
+</localfile>
+
+
+
+2- ADICIONAR DECODER E RULES PARA O CRON
+
+
+-/var/ossec/etc/decoders/local_decoder.xml
+
+
+
+<decoder name="cron-service">
+    <program_name>cron|CRON</program_name>
+</decoder>
+
+<decoder name="cron-service1">
+    <parent>cron-service</parent>
+    <regex type="pcre2">\((\w+)\) CMD \((.*?)\)$</regex>
+    <order>service_user, command</order>
+</decoder>
+
+<decoder name="cron-service1">
+    <parent>cron-service</parent>
+    <regex type="pcre2">\((\w+)\) INFO \(Skipping @(\w+) jobs .*?\)$</regex>
+    <order>service, message</order>
+</decoder>
+
+
+-/var/ossec/etc/rules/local_rules.xml
+
+
+<!-- Rules for journald logs for CRON services-->
+<group name="cron-service,">
+  <!-- rule for groupped logs -->
+  <rule id="111800" level="0">
+    <decoded_as>cron-service</decoded_as>
+    <description>Journald logs for CRON.</description>
+  </rule>
+
+  <!-- rules to detect when the cron.service executes a command-->
+  <rule id="111801" level="8">
+    <if_sid>111800</if_sid>
+    <match>CMD</match>
+    <description>CRON: The $(service_user) user executed ($(command)) on $(hostname).</description>
+  </rule>
+
+  <!-- rules to detect when the cron.service performs a reboot-->
+  <rule id="111802" level="12">
+    <if_sid>111800</if_sid>
+    <match>not system startup</match>
+    <description>CRON: The cron.service on $(hostname) just performed a $(message).</description>
+  </rule>
+
+</group>
+

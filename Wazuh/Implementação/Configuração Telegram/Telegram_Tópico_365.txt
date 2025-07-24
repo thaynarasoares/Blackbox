@@ -1,5 +1,6 @@
 Integração com Telegram Utilizando Tópico
 
+
 1 - Criação do Grupo e Tópico 
 
 1.1 - Dentro do grupo, você deve acessar a opção de tópicos e selecionar "Criar novo tópico
@@ -128,6 +129,11 @@ esac
 
 ${WAZUH_PATH}/${WPYTHON_BIN} ${PYTHON_SCRIPT} "$@"
 
+2.2 Realizar o comando abaixo 
+
+chown root:wazuh /var/ossec/integrations/custom-telegram*
+chmod 750 /var/ossec/integrations/custom-telegram*
+
 
 3 - Configuração do OSSEC
 
@@ -135,7 +141,7 @@ ${WAZUH_PATH}/${WPYTHON_BIN} ${PYTHON_SCRIPT} "$@"
   <!-- Integração com Telegram  -->
   <integration>
     <name>NOME-DO-ARQUIVO</name>
-    <hook_url>https://api.telegram.org/API-DO-BOT/sendMessage?chat_id=-ID-DO-CHAT&amp;message_thread_id=ID-DO-TÓPICO</hook_url>
+    <hook_url>https://api.telegram.org/API-DO-BOT/sendMessage?chat_id=ID-DO-CHAT&amp;message_thread_id=ID-DO-TÓPICO</hook_url>
     <rule_id>ADICIONAR REGRA OU NIVEL DA REGRA</rule_id>
     <alert_format>json</alert_format>
   </integration

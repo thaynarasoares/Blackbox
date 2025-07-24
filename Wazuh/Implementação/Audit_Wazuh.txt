@@ -1,0 +1,122 @@
+IMPLEMENTAÇÃO DO AUDIT (LINK IMPORTANTE https://groups.google.com/g/wazuh/c/Mc38LaTjJnk/m/I8-EFp-vAAAJ)
+
+Comandos de monitoramento executados como root
+LINK: https://documentation.wazuh.com/current/user-manual/capabilities/system-calls-monitoring/use-cases/monitoring-commands-run-as-root.html
+
+1- Configuração do Audit
+
+nano /etc/audit/audit.rules
+nano /etc/audit/rules.d/audit.rules
+
+2- Configuração do Audit
+
+-apt-get install auditd audispd-plugins
+
+-systemctl enable auditd.service && systemctl start auditd.service
+
+-auditctl -l (VÊ AS REGRAS EXISTENTE)
+
+-auditctl -R /etc/audit/rules.d/audit.rules (IMPLEMENTAR AS REGRAS ADICIONADA)
+
+-systemctl restart wazuh-agent
+
+
+3- Configuração do Audit
+
+-echo "-a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c" >> /etc/audit/audit.rules
+-echo "-a exit,always -F euid=0 -F arch=b32 -S execve -k audit-wazuh-c" >> /etc/audit/audit.rules
+
+-auditctl -R /etc/audit/audit.rules
+-auditctl -l
+
+
+4- Adicionar no agent do Wazuh ou no Agents Management -> Groups -> Adicionar a config para pegar em todos agent do Groupo 
+
+-/var/ossec/etc/ossec.conf WAZUH AGENT
+
+-<localfile>
+    <location>/var/log/audit/audit.log</location>
+    <log_format>audit</log_format>
+ </localfile>
+
+
+
+5- Monitoramento da execução de comandos maliciosos
+
+LINK: https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html
+
+-sudo systemctl start auditd
+-sudo systemctl enable auditd
+
+
+-echo "-a exit,always -F auid=1000 -F egid!=994 -F auid!=-1 -F arch=b32 -S execve -k audit-wazuh-c" >> /etc/audit/audit.rules
+-echo "-a exit,always -F auid=1000 -F egid!=994 -F auid!=-1 -F arch=b64 -S execve -k audit-wazuh-c" >> /etc/audit/audit.rules
+
+
+-sudo auditctl -R /etc/audit/audit.rules
+-sudo auditctl -l
+
+
+-/var/ossec/etc/ossec.conf (WAZUH AGENT)
+
+
+<localfile>
+  <log_format>audit</log_format>
+  <location>/var/log/audit/audit.log</location>
+</localfile>
+
+
+-sudo systemctl restart wazuh-agent
+
+
+6- CONFIG WAZUH SERVER
+
+-nano /var/ossec/etc/lists/suspicious-programs
+
+ncat:yellow
+nc:red
+tcpdump:orange
+
+-<ruleset> section of the Wazuh server /var/ossec/etc/ossec.conf
+
+<list>etc/lists/suspicious-programs</list>
+
+-nano /var/ossec/etc/rules/local_rules.xml
+
+<group name="audit">
+  <rule id="100210" level="12">
+      <if_sid>80792</if_sid>
+  <list field="audit.command" lookup="match_key_value" check_value="red">etc/lists/suspicious-programs</list>
+    <description>Audit: Highly Suspicious Command executed: $(audit.exe)</description>
+      <group>audit_command,</group>
+  </rule>
+</group>
+
+
+-sudo systemctl restart wazuh-manager
+
+
+7- Monitoramento de acesso a arquivos e diretórios
+LINK: https://documentation.wazuh.com/current/user-manual/capabilities/system-calls-monitoring/use-cases/monitoring-file-and-directory-access.html
+
+
+echo "-w /home -p w -k audit-wazuh-w" >> /etc/audit/audit.rules
+echo "-w /home -p a -k audit-wazuh-a" >> /etc/audit/audit.rules
+echo "-w /home -p r -k audit-wazuh-r" >> /etc/audit/audit.rules
+echo "-w /home -p x -k audit-wazuh-x" >> /etc/audit/audit.rules
+
+auditctl -R /etc/audit/audit.rules
+auditctl -l
+
+
+systemctl restart wazuh-agent
+
+
+
+
+
+
+
+
+
+
