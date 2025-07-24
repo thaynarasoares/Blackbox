@@ -1,22 +1,22 @@
-PROBLEMA JVM - Thaynara
+PROBLEMA JVM
 
-#########################################################################
-
+-Log de referência
 
 -attempting to trigger G1GC due to high heap usage
 -GC did bring memory usage down, before
+
+-Link de referência 
 
 LINK: https://groups.google.com/g/wazuh/c/Ygau8DVwa_Q/m/XoGWxYMsAwAJ (GOOGLE GRUPO)
 LINK: https://documentation.wazuh.com/current/user-manual/wazuh-indexer/wazuh-indexer-tuning.html
 
 Edite o /etc/wazuh-indexer/jvm.options arquivo e altere os sinalizadores da JVM. Defina um valor de tamanho de heap do indexador Wazuh para limitar o uso de memória. Os limites de heap da JVM impedem a OutOfMemoryexceção se o indexador Wazuh tentar alocar mais memória do que a disponível devido à configuração na etapa anterior. O valor recomendado é metade da RAM do sistema. Por exemplo, defina o tamanho da seguinte forma para um sistema com 8 GB de RAM.
 
+-Verificar o Arquivo de Log
 
+cat /opt/var/log/wazuh-indexer/wazuh-cluster.log 
 
-############################################################################
-
-
-cat /opt/var/log/wazuh-indexer/wazuh-cluster.log (VERIFICAR A LOG)
+-Editar o arquivo de configuração
 
 nano /etc/wazuh-indexer/jvm.options
 
