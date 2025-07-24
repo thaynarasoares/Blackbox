@@ -1,0 +1,143 @@
+ATUALIZAÇÃO DO WAZUH PRODUÇÃO VERSÃO 4.12.0
+_____________________________________________
+
+-Preparando a atualização
+
+
+apt-get install gnupg apt-transport-https
+
+curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+
+apt-get update
+
+_______________________________________________
+
+-Pare os serviços do painel Filebeat e Wazuh se estiverem instalados no nó.
+
+
+systemctl stop filebeat
+systemctl stop wazuh-dashboard
+
+
+_______________________________________________
+
+-Atualizando o indexador Wazuh
+
+
+curl -X PUT "https://IPDOINDEXADOR:9200/_cluster/settings" \
+-u SENHAAA -k -H "Content-Type: application/json" -d '
+{
+   "persistent": {
+      "cluster.routing.allocation.enable": "primaries"
+   }
+}'
+
+
+
+curl -X POST "https://IPDOINDEXADOR:9200/_flush" -u SENHAAA -k
+
+
+systemctl stop wazuh-manager
+
+
+systemctl stop wazuh-indexer
+
+
+apt-get install wazuh-indexer
+
+
+systemctl daemon-reload
+systemctl enable wazuh-indexer
+systemctl start wazuh-indexer
+
+
+-Repita as etapas 1 a 3 acima em todos os nós do indexador Wazuh antes de prosseguir para as ações pós-atualização.
+
+
+_________________________________________________
+
+-Ações pós atualização
+
+
+curl -k -u SENHAAA https://IPDOINDEXADOR:9200/_cat/nodes?v
+
+
+
+curl -X PUT "https://IPDOINDEXADOR:9200/_cluster/settings" \
+-u SENHAAA -k -H "Content-Type: application/json" -d '
+{
+   "persistent": {
+      "cluster.routing.allocation.enable": "all"
+   }
+}
+'
+
+
+curl -k -u SENHAAA https://IPDOINDEXADOR:9200/_cat/nodes?v
+
+
+
+systemctl start wazuh-manager
+
+
+/usr/share/wazuh-indexer/bin/opensearch-plugin list
+
+
+___________________________________________________
+
+
+-Atualizando o servidor Wazuh
+
+
+apt-get install wazuh-manager
+
+
+____________________________________________________
+
+-Configurando o Filebeat
+
+
+curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.4.tar.gz | sudo tar -xvz -C /usr/share/filebeat/module
+
+
+curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.12.0/extensions/elasticsearch/7.x/wazuh-template.json
+chmod go+r /etc/filebeat/wazuh-template.json
+
+
+systemctl daemon-reload
+systemctl enable filebeat
+systemctl start filebeat
+
+
+filebeat setup --pipelines
+filebeat setup --index-management -E output.logstash.enabled=false
+
+
+___________________________________________________
+
+
+-Atualizando o painel do Wazuh
+
+Reaplique manualmente quaisquer alterações de configuração ao /etc/wazuh-dashboard/opensearch_dashboards.yml arquivo. Certifique-se de que os valores de server.ssl.keye server.ssl.certificatecorrespondam aos arquivos localizados em /etc/wazuh-dashboard/certs/.
+
+
+apt-get install wazuh-dashboard
+
+
+
+systemctl daemon-reload
+systemctl enable wazuh-dashboard
+systemctl start wazuh-dashboard
+
+
+
+sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin list
+
+_____________________________________________________
+
+
+apt list --installed wazuh-indexer
+apt list --installed wazuh-manager
+apt list --installed wazuh-dashboard
