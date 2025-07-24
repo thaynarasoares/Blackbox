@@ -1,0 +1,84 @@
+-INSTALAÇÃO DO METABASE - v0.53.4
+
+
+apt install openjdk-21-jre-headless
+
+java -version
+
+1. Criar Usuário e Diretórios para Metabase
+
+
+
+sudo groupadd -r metabase
+sudo useradd -r -s /bin/false -g metabase metabase
+sudo mkdir -p /opt/metabase
+sudo chown -R metabase:metabase /opt/metabase
+
+
+Crie arquivos para logs e configurações:
+
+
+sudo touch /var/log/metabase.log
+sudo chown syslog:adm /var/log/metabase.log
+
+sudo touch /etc/default/metabase
+sudo chmod 640 /etc/default/metabase
+
+
+3. Baixar e Configurar o Metabase
+
+
+cd /opt/metabase
+sudo wget https://downloads.metabase.com/v0.53.4/metabase.jar
+sudo chown metabase:metabase metabase.jar
+
+
+
+4. Criar Serviço Systemd
+
+
+
+sudo nano /etc/systemd/system/metabase.service
+
+
+Cole este conteúdo, ajustando se necessário:
+
+
+
+[Unit]
+Description=Metabase server
+After=syslog.target
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/metabase/
+ExecStart=/usr/bin/java --add-opens java.base/java.nio=ALL-UNNAMED -jar /opt/metabase/metabase.jar
+EnvironmentFile=/etc/default/metabase
+User=metabase
+Type=simple
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=metabase
+SuccessExitStatus=143
+TimeoutStopSec=120
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+Atualize o systemd:
+
+
+sudo systemctl daemon-reload
+sudo systemctl start metabase.service
+sudo systemctl enable metabase.service
+
+sudo systemctl status metabase.service
+
+
+
+
+
+
